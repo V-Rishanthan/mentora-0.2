@@ -25,6 +25,20 @@ module.exports = {
         //   500: "#6C757D",
         // },
       },
+      fontFamily: {
+        'outfit-thin': ['Outfit-Thin', 'system-ui'],
+        'outfit-extralight': ['Outfit-ExtraLight', 'system-ui'],
+        'outfit-light': ['Outfit-Light', 'system-ui'],
+        'outfit-regular': ['Outfit-Regular', 'system-ui'],
+        'outfit-medium': ['Outfit-Medium', 'system-ui'],
+        'outfit-semibold': ['Outfit-SemiBold', 'system-ui'],
+        'outfit-bold': ['Outfit-Bold', 'system-ui'],
+        'outfit-extrabold': ['Outfit-ExtraBold', 'system-ui'],
+        'outfit-black': ['Outfit-Black', 'system-ui'],
+        
+        // i have  set a default Outfit font
+        'outfit': ['Outfit-Regular', 'system-ui'],
+      },
     },
   },
   plugins: [],

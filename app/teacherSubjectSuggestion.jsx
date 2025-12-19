@@ -1,3 +1,4 @@
+import { useRouter } from "expo-router";
 import { Brain } from "lucide-react-native";
 import { useState } from "react";
 import {
@@ -15,15 +16,7 @@ import { getGeminiResponse } from "../service/geminiService";
 import Button from "./components/Button";
 import SectionTitle from "./components/SectionTitle";
 
-const subjectSuggestion = {
-  title: "Core Vue.js Important Topics",
-  subjects: [
-    "What is Vue.js",
-    "Vue instance",
-    "Template syntax",
-    "Data binding",
-  ],
-};
+
 
 export default function TeacherSubjectSuggestion() {
   const [userInput, setUserInput] = useState("");
@@ -69,6 +62,13 @@ Constraints:
       setIsLoading(false);
     }
   };
+
+  // handle route
+  const router = useRouter()
+  const handleRoute =() =>{
+   router.dismissAll() // Clear all previous screens
+  router.replace("/(tabs)/home")
+  }
 
   return (
     <ScrollView
@@ -201,7 +201,7 @@ Constraints:
         </View>
         {/* button */}
         <View className="mb-6">
-          <Button text="Continue " />
+          <Button text="Continue " onPress={handleRoute}/>
         </View>
       </KeyboardAvoidingView>
     </ScrollView>
