@@ -6,6 +6,7 @@ import { StatusBar } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 export default function TabLayout() {
 
+  // Import the all font in my file
     const [fontsLoaded,fontError] = useFonts({
     'Outfit-Black': require('../../assets/fonts/Outfit-Black.ttf'),
     'Outfit-Bold': require('../../assets/fonts/Outfit-Bold.ttf'),

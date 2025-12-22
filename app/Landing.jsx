@@ -16,8 +16,8 @@ export default function Landing() {
       <View className="w-80 h-auto">
         <Image
           source={require("../assets/images/logo-2.png")}
-          className="w-full  "
-          resizeMode="contain"
+          className="w-full"
+          resizeMode="cover"
         />
       </View>
 

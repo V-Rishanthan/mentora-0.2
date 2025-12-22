@@ -1,14 +1,16 @@
 import { Search, X } from "lucide-react-native";
 import { useState } from "react";
 import {
-    Image,
-    ScrollView,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
+
 import ProgressCircle from "../components/ProgressCircle";
+import CourseCard from "../CourseCard";
 const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
   // Skills data
@@ -93,12 +95,13 @@ const HomeScreen = () => {
         </View>
       </View>
 
-      {/* Other Content Sections */}
+      {/*courses content Section */}
       <View className="mb-10">
         <Text className="font-outfit-semibold text-lg text-gray mb-4">
           Popular Courses
         </Text>
         {/*  courses content here */}
+        <CourseCard/>
       </View>
     </ScrollView>
   );

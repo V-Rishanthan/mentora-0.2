@@ -18,12 +18,17 @@ module.exports = {
         secondary: "#F5F8FF",
         WHITE:"#ffffff",
         accent: "#FF006E",
-        light:"#c7c7c8"
-        // "custom-gray": {
-        //   100: "#F8F9FA",
-        //   200: "#E9ECEF",
-        //   500: "#6C757D",
-        // },
+        light:"#c7c7c8",
+      grayPro: {
+          100: "#E6E7E7", // Cloud Mist
+          200: "#D0D1D1", // Soft Ash
+          300: "#AFB1B1", // Silver Fog
+          400: "#878989", // Urban Grey
+          500: "#6B6D6E", // Steel Grey
+          600: "#5C5E5E", // Graphite Stone
+          700: "#4E5050", // Charcoal Slate
+          800: "#444546", // Deep Carbon
+        },
       },
       fontFamily: {
         'outfit-thin': ['Outfit-Thin', 'system-ui'],
