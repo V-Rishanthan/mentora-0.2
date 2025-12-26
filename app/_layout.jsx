@@ -4,29 +4,7 @@ import { useEffect } from "react";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { AuthContextProvider, useAuth } from "../context/authContext";
 
-// Move AuthLayout inside or create separate file
-// function AuthLayout() {
-//   const { isAuthenticated } = useAuth();
-//   const segments = useSegments();
-//   const router = useRouter();
 
-//   useEffect(() => {
-//     console.log("AuthLayout - isAuthenticated:", isAuthenticated);
-//   console.log("AuthLayout - segments:", segments);
-//   console.log("AuthLayout - current route:", segments[0]);
-//     if (typeof isAuthenticated === "undefined") return;
-    
-//     const inTabs = segments[0] === "(tabs)";
-    
-//     if (isAuthenticated && !inTabs) {
-//       router.replace("/(tabs)/home");
-//     } else if (!isAuthenticated && inTabs) {
-//       router.replace("/welcome");
-//     }
-//   }, [isAuthenticated, segments]);
-
-//   return null;
-// }
 function AuthLayout() {
   const { isAuthenticated } = useAuth();
   const segments = useSegments();
@@ -56,7 +34,8 @@ function AuthLayout() {
       router.replace("/home");
     } else if (isAuthenticated == false) {
       console.log("Redirecting unauthenticated user to /welcome");
-      router.replace("/login");
+      router.replace("/role");
+      // router.replace("/login");
     }
   }, [isAuthenticated]);
 

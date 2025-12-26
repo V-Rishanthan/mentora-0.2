@@ -1,22 +1,96 @@
 import { useRouter } from "expo-router";
+import { useEffect, useState } from "react";
 import {
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
   TextInput,
   View,
 } from "react-native";
+import {
+  getTeacherData,
+  saveTeacherData,
+} from "../utils/teacherRegistrationStore";
 import Button from "./components/Button";
 import SectionTitle from "./components/SectionTitle";
 
 export default function RegisterTeachers() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    qualification: "",
+    yearsOfExperience: "",
+    specialization: "",
+    bio: "",
+  });
+  const [loading, setLoading] = useState(false);
 
-   const router = useRouter();
-  
-    const handleClick = () => {
+  // Load saved data when component mounts
+  useEffect(() => {
+    loadSavedData();
+  }, []);
+
+  const loadSavedData = async () => {
+    try {
+      const savedData = await getTeacherData();
+      setFormData((prev) => ({
+        ...prev,
+        ...savedData,
+      }));
+    } catch (error) {
+      console.error("Error loading saved data:", error);
+    }
+  };
+
+  const handleChange = (field, value) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleContinue = async () => {
+    // Validation
+    if (!formData.qualification.trim()) {
+      Alert.alert("Error", "Please enter your qualification");
+      return;
+    }
+
+    if (
+      !formData.yearsOfExperience.trim() ||
+      isNaN(formData.yearsOfExperience)
+    ) {
+      Alert.alert("Error", "Please enter valid years of experience");
+      return;
+    }
+
+    if (!formData.specialization.trim()) {
+      Alert.alert("Error", "Please enter your specialization");
+      return;
+    }
+
+    if (!formData.bio.trim() || formData.bio.trim().length < 50) {
+      Alert.alert("Error", "Bio must be at least 50 characters long");
+      return;
+    }
+
+    setLoading(true);
+
+    try {
+      // Save professional info to storage
+      await saveTeacherData({
+        qualification: formData.qualification.trim(),
+        yearsOfExperience: formData.yearsOfExperience.trim(),
+        specialization: formData.specialization.trim(),
+        bio: formData.bio.trim(),
+      });
+
+      // Navigate to subjects screen
       router.push("./teacherSubjectSuggestion");
-    };
-
+    } catch (error) {
+      Alert.alert("Error", "Failed to save data. Please try again.");
+      console.error("Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <View className="flex-1 px-6 mt-5 bg-secondary">
       <View className="w-full ">
@@ -41,7 +115,9 @@ export default function RegisterTeachers() {
         {/* Qualification */}
         <View className="flex-row items-center rounded-xl border border-light px-4  mb-5">
           <TextInput
-            className="flex-1 text-gray/15 text-base py-4"
+            value={formData.qualification}
+            onChangeText={(value)=>handleChange("qualification", value)}
+            className="flex-1 text-grayPro-800 text-base py-4"
             placeholder="Qualification"
             placeholderTextColor="#9ca3af"
           />
@@ -49,7 +125,9 @@ export default function RegisterTeachers() {
         {/*  Years of Experience*/}
         <View className="flex-row items-center rounded-xl border border-light px-4  mb-5">
           <TextInput
-            className="flex-1 text-gray/15 text-base py-4"
+          value={formData.yearsOfExperience}
+            onChangeText={(value) => handleChange("yearsOfExperience", value)}
+            className="flex-1 text-grayPro-800 text-base py-4"
             placeholder="Years of Experience"
             placeholderTextColor="#9ca3af"
             keyboardType="numeric"
@@ -58,7 +136,9 @@ export default function RegisterTeachers() {
         {/* Specialization */}
         <View className="flex-row items-center rounded-xl border border-light px-4  mb-5">
           <TextInput
-            className="flex-1 text-gray/15 text-base py-4"
+          value={formData.specialization}
+            onChangeText={(value) => handleChange("specialization", value)}
+            className="flex-1 text-grayPro-800 text-base py-4"
             placeholder="Specialization"
             placeholderTextColor="#9ca3af"
           />
@@ -67,7 +147,9 @@ export default function RegisterTeachers() {
         {/* Bio Field */}
         <View className="rounded-xl border border-light px-4 mb-5">
           <TextInput
-            className="text-gray/15 text-base py-4 min-h-32"
+           value={formData.bio}
+            onChangeText={(value) => handleChange("bio", value)}
+            className="text-grayPro-800 text-base py-4 min-h-32"
             placeholder="Tell us about yourself, your teaching philosophy, and what makes you unique..."
             placeholderTextColor="#9ca3af"
             multiline={true}
@@ -78,7 +160,11 @@ export default function RegisterTeachers() {
         </View>
         {/* button */}
         <View className="mt-8">
-          <Button text="Continue " onPress={handleClick} />
+         <Button 
+              text={loading ? "Saving..." : "Continue"} 
+              onPress={handleContinue}
+              disabled={loading}
+            />
         </View>
       </KeyboardAvoidingView>
     </View>

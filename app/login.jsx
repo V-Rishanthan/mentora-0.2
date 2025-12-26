@@ -17,45 +17,45 @@ import Button from "./components/Button";
 export default function LoginScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const { login,selectedRole  } = useAuth();
+  const { login, selectedRole } = useAuth();
 
   const handleSignUp = () => {
-    selectedRole=="Student" ? router.push("./register") : router.push("./registerTeachers")
-    
+    selectedRole == "Student"
+      ? router.push("./register")
+      : router.push("./registerTeachers");
   };
 
   // assign the hooks
   const emailRef = useRef();
   const passwordRef = useRef();
 
+  const handleLogin = async () => {
+    // get input value from the user and store it
+    const email = emailRef.current;
+    const password = passwordRef.current;
 
-const handleLogin = async () => {
-  // get input value from the user and store it 
-  const email = emailRef.current;
-  const password = passwordRef.current;
-  
-  // check if the both value valid
-  if (!email || !password) {
-    Alert.alert("Error", "Please enter both email and password.");
-    return;
-  }
-
-  try {
-    setLoading(true);
-    // use the contect hooks and pass the props
-    const response = await login(email, password);
-    
-    if (!response.success) {
-      Alert.alert("Login Failed", response.error);
+    // check if the both value valid
+    if (!email || !password) {
+      Alert.alert("Error", "Please enter both email and password.");
+      return;
     }
-    // If success is true, your auth context should handle the navigation
-  } catch (error) {
-    Alert.alert("Error", "An unexpected error occurred. Please try again.");
-    console.error("Login error:", error);
-  } finally {
-    setLoading(false);
-  }
-};
+
+    try {
+      setLoading(true);
+      // use the contect hooks and pass the props
+      const response = await login(email, password);
+
+      if (!response.success) {
+        Alert.alert("Login Failed", response.error);
+      }
+      // If success is true, your auth context should handle the navigation
+    } catch (error) {
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+      console.error("Login error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <View className="flex-1 bg-primary">
       <StatusBar
@@ -99,11 +99,13 @@ const handleLogin = async () => {
             Sign in to continue your learning journey
           </Text>
 
-          <View className="bg-green-50 w-32 px-3 py-1.5 rounded-full">
+          {selectedRole && (
+            <View className="bg-green-50 w-32 px-3 py-1.5 rounded-full">
               <Text className="text-green-800 text-center text-sm font-outfit-medium">
-               {selectedRole}
+                {selectedRole}
               </Text>
-          </View>
+            </View>
+          )}
         </View>
         <ScrollView>
           <View className="space-y-6 pb-6 mt-10">

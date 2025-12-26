@@ -1,8 +1,9 @@
 import { useRouter } from "expo-router";
 import { Brain } from "lucide-react-native";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
@@ -12,17 +13,21 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
+import { useAuth } from "../context/authContext";
 import { getGeminiResponse } from "../service/geminiService";
+import { clearTeacherData, getTeacherData } from "../utils/teacherRegistrationStore"; // Import storage utils
 import Button from "./components/Button";
 import SectionTitle from "./components/SectionTitle";
 
 
-
 export default function TeacherSubjectSuggestion() {
+  const { registerTeacher } = useAuth();
   const [userInput, setUserInput] = useState("");
   const [aiOutput, setAiOutput] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selected, setSelected] = useState([]);
+  const [registrationLoading, setRegistrationLoading] = useState(false);
+  const [previousData, setPreviousData] = useState(null); // Store previous screens data
 
   const handleSendMessage = async () => {
     if (!userInput) return;
@@ -65,10 +70,122 @@ Constraints:
 
   // handle route
   const router = useRouter()
-  const handleRoute =() =>{
-   router.dismissAll() // Clear all previous screens
-  router.replace("/(tabs)/home")
-  }
+
+ // Load data from AsyncStorage when component mounts
+  useEffect(() => {
+    loadPreviousData();
+  }, []);
+
+
+   const loadPreviousData = async () => {
+    try {
+      const savedData = await getTeacherData();
+      console.log("Loaded previous data from AsyncStorage:", savedData);
+      
+      if (Object.keys(savedData).length === 0) {
+        Alert.alert("No Data Found", "Please go back and fill the registration form.");
+        router.back();
+        return;
+      }
+      
+      setPreviousData(savedData);
+      
+      // Load previously saved subjects if any
+      if (savedData.subjects && Array.isArray(savedData.subjects)) {
+        setSelected(savedData.subjects);
+      }
+    } catch (error) {
+      console.error("Error loading previous data:", error);
+      Alert.alert("Error", "Failed to load your data. Please start over.");
+      router.back();
+    }
+  };
+
+    // THIS IS THE MAIN FUNCTION - COMBINES BOTH DATA SOURCES
+  const handleCompleteRegistration = async () => {
+    // Check if we have previous data
+    if (!previousData) {
+      Alert.alert("Error", "No registration data found. Please start over.");
+      return;
+    }
+
+    // Validate required fields from previous screens
+    const requiredFields = ['username', 'email', 'password', 'qualification', 'yearsOfExperience', 'specialization', 'bio'];
+    const missingFields = requiredFields.filter(field => !previousData[field]?.trim());
+    
+    if (missingFields.length > 0) {
+      Alert.alert("Missing Information", `Please go back and fill: ${missingFields.map(f => f.replace(/([A-Z])/g, ' $1').trim()).join(', ')}`);
+      return;
+    }
+
+    // Check if subjects are selected
+    if (selected.length === 0) {
+      Alert.alert("Subjects Required", "Please add at least one subject you teach.");
+      return;
+    }
+
+    setRegistrationLoading(true);
+
+    try {
+      //  COMBINE BOTH DATA SOURCES:
+      // 1. Data from AsyncStorage (previous screens)
+      // 2. Data from current screen (selected subjects)
+      
+      const completeTeacherData = {
+        // From AsyncStorage (Screen 1 & 2):
+        username: previousData.username,
+        email: previousData.email,
+        password: previousData.password,
+        qualification: previousData.qualification,
+        yearsOfExperience: previousData.yearsOfExperience,
+        specialization: previousData.specialization,
+        bio: previousData.bio,
+        
+        // From current screen state (Screen 3):
+        subjects: selected,
+        
+       
+      };
+
+     
+
+      // PASS COMBINED DATA TO AUTH CONTEXT
+      const result = await registerTeacher(completeTeacherData);
+      console.log(result)
+      
+      if (result.success) {
+        console.log("Teacher registration successful!");
+        
+        // Clear AsyncStorage after successful registration
+        await clearTeacherData();
+        
+        // Show success message
+        Alert.alert(
+          " Registration Successful!",
+          "Your teacher account has been created successfully. Welcome to Mentora!",
+          // [
+          //   {
+          //     text: "Get Started",
+          //     onPress: () => {
+          //       // router.dismissAll();
+          //       router.replace("/(tabs)/home");
+          //     }
+          //   }
+          // ]
+        );
+      } else {
+        Alert.alert("Registration Failed", result.error || "Something went wrong. Please try again.");
+        console.error("Registration error:", result.error);
+      }
+      
+    } catch (error) {
+      console.error("Unexpected error during registration:", error);
+      Alert.alert("Error", "An unexpected error occurred. Please try again.");
+    } finally {
+      setRegistrationLoading(false);
+    }
+  };
+ 
 
   return (
     <ScrollView
@@ -201,7 +318,11 @@ Constraints:
         </View>
         {/* button */}
         <View className="mb-6">
-          <Button text="Continue " onPress={handleRoute}/>
+         <Button 
+              text={registrationLoading ? "Creating Account..." : "Complete Registration"} 
+              onPress={handleCompleteRegistration}
+              disabled={registrationLoading || selected.length === 0}
+            />
         </View>
       </KeyboardAvoidingView>
     </ScrollView>
