@@ -9,6 +9,7 @@ import {
   View,
 } from "react-native";
 
+import { useRouter } from "expo-router";
 import ProgressCircle from "../components/ProgressCircle";
 import CourseCard from "../CourseCard";
 const HomeScreen = () => {
@@ -19,6 +20,8 @@ const HomeScreen = () => {
     { percentage: 80, label: "Next.js", color: "#8681FB" },
     { percentage: 95, label: "Java", color: "#8681FB" },
   ];
+
+  const router = useRouter()
   return (
     <ScrollView
       className="flex-1 px-6 relative bg-secondary"
@@ -36,20 +39,24 @@ const HomeScreen = () => {
         </View>
 
         {/* Profile image - Right side */}
-        <View className="w-16 h-16 rounded-full overflow-hidden border">
+        <TouchableOpacity
+        onPress={()=>router.push("/user")}
+        className="w-16 h-16 rounded-full overflow-hidden border">
           <Image
             source={require("../../assets/images/profile.jpg")}
             className="w-full h-full"
             resizeMode="cover"
           />
-        </View>
+        </TouchableOpacity>
       </View>
       {/* Hero text */}
       <View className="mb-4">
         <Text className="text-3xl  font-outfit-semibold text-gray">
           Find your <Text className="text-primary">Favorite</Text>
         </Text>
-        <Text className="text-3xl  font-outfit-semibold text-gray ">Online Course</Text>
+        <Text className="text-3xl  font-outfit-semibold text-gray ">
+          Online Course
+        </Text>
       </View>
 
       {/* Search Bar */}
@@ -101,7 +108,7 @@ const HomeScreen = () => {
           Popular Courses
         </Text>
         {/*  courses content here */}
-        <CourseCard/>
+        <CourseCard />
       </View>
     </ScrollView>
   );

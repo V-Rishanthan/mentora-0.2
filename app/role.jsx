@@ -1,21 +1,30 @@
 import { useRouter } from "expo-router";
 import {
-    Image,
-    ScrollView,
-    StatusBar,
-    Text,
-    TouchableOpacity,
-    View,
+  Image,
+  ScrollView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
 } from "react-native";
+import { useAuth } from "../context/authContext";
 import Button from "./components/Button";
 
 export default function RoleSelectionScreen() {
+  const router = useRouter();
+  const { setGlobalRole } = useAuth(); // Get setGlobalRole from auth context
 
-    const router = useRouter()
+  const handleStudentRole = () => {
+    setGlobalRole("Student");
+    console.log("Role set to: student");
+    router.push("/login")
+  };
 
-    const handlelogin = () =>{
-        router.push("./login")
-    }
+ const handleTeacherRole = () => {
+     setGlobalRole("Teacher");
+    console.log("Role set to: teacher");
+    router.push("/login")
+  }
 
   return (
     <>
@@ -52,12 +61,11 @@ export default function RoleSelectionScreen() {
 
           {/* Role Cards Container */}
           <View className="flex flex-col gap-5 mb-10 mt-14 px-10 ">
-
             {/* Student Card */}
             <TouchableOpacity
               className="bg-white rounded-2xl p-5 shadow-2xl flex-row items-center gap-4"
               activeOpacity={0.7}
-              onPress={() => console.log("Student selected")}
+              onPress={handleStudentRole}
             >
               {/* Icon */}
               <Image
@@ -73,7 +81,7 @@ export default function RoleSelectionScreen() {
                 </Text>
 
                 <Text className="text-base text-gray leading-6">
-                Browse subjects, enroll in courses, and track your learning
+                  Browse subjects, enroll in courses, and track your learning
                 </Text>
               </View>
             </TouchableOpacity>
@@ -82,7 +90,7 @@ export default function RoleSelectionScreen() {
             <TouchableOpacity
               className="bg-white rounded-2xl p-5 shadow-2xl flex-row items-center gap-4"
               activeOpacity={0.7}
-              onPress={() => console.log("Student selected")}
+              onPress={handleTeacherRole}
             >
               {/* Icon */}
               <Image
@@ -93,31 +101,28 @@ export default function RoleSelectionScreen() {
 
               {/* Text Content */}
               <View className="flex-1">
-                <Text className="text-xl font-semibold  mb-1">
-                 I'm Teacher 
-                </Text>
+                <Text className="text-xl font-semibold  mb-1">I'm Teacher</Text>
 
                 <Text className="text-base text-gray leading-6">
-                 Create classes, manage students, and share your expertises
+                  Create classes, manage students, and share your expertises
                 </Text>
               </View>
             </TouchableOpacity>
 
+            <View className="mt-14">
+              <Button text="Login"  />
 
-           <View className="mt-14">
-             <Button text="Login" onPress={handlelogin}/>
-
-           <View className="flex flex-row justify-center items-center mt-2">
-              <Text className="text-base text-black">
-              Don't have an account?
-            </Text>
-            <TouchableOpacity >
-              <Text className="text-base text-primary font-semibold underline">
-                Sign Up
-              </Text>
-            </TouchableOpacity>
-           </View>
-           </View>
+              <View className="flex flex-row justify-center items-center mt-2">
+                <Text className="text-base text-black">
+                  Don't have an account?
+                </Text>
+                <TouchableOpacity>
+                  <Text className="text-base text-primary font-semibold underline">
+                    Sign Up
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
           </View>
         </ScrollView>
       </View>
