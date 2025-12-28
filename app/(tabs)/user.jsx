@@ -1,7 +1,28 @@
 import { router } from "expo-router";
-import { ArrowLeft, Book, BookOpen, Calendar, GraduationCap, LogOut, Mail, MapPin, Phone, Target, User, Users } from "lucide-react-native";
+import {
+  ArrowLeft,
+  Book,
+  BookOpen,
+  Calendar,
+  CirclePlus,
+  GraduationCap,
+  LogOut,
+  Mail,
+  MapPin,
+  Phone,
+  Target,
+  User,
+  Users,
+} from "lucide-react-native";
 import { useEffect, useState } from "react";
-import { ActivityIndicator, Image, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import {
+  ActivityIndicator,
+  Image,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { useAuth } from "../../context/authContext";
 
 export default function UserScreen() {
@@ -10,10 +31,10 @@ export default function UserScreen() {
   const [profileData, setProfileData] = useState(null);
 
   useEffect(() => {
-    console.log("📊 UserScreen - Auth User:", authUser);
-    console.log("📊 UserScreen - User Profile:", userProfile);
-    console.log("📊 UserScreen - Selected Role:", selectedRole);
-    
+    console.log(" UserScreen - Auth User:", authUser);
+    console.log(" UserScreen - User Profile:", userProfile);
+    console.log(" UserScreen - Selected Role:", selectedRole);
+
     if (authUser && userProfile) {
       // We have both auth user and profile data
       setProfileData(userProfile);
@@ -51,7 +72,7 @@ export default function UserScreen() {
     return (
       <View className="flex-1 bg-primary justify-center items-center">
         <Text className="text-white text-lg mb-4">No user logged in</Text>
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => router.replace("/login")}
           className="bg-white px-6 py-3 rounded-lg"
         >
@@ -62,17 +83,21 @@ export default function UserScreen() {
   }
 
   // Get display data from Firebase
-  const displayName = profileData?.username || authUser?.displayName || authUser?.email?.split('@')[0] || "User";
+  const displayName =
+    profileData?.username ||
+    authUser?.displayName ||
+    authUser?.email?.split("@")[0] ||
+    "User";
   const email = authUser?.email || "No email";
   const userRole = selectedRole || profileData?.role || "student";
-  
+
   // Format join date
-  const joinDate = profileData?.createdAt 
-    ? `Joined ${new Date(profileData.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`
+  const joinDate = profileData?.createdAt
+    ? `Joined ${new Date(profileData.createdAt).toLocaleDateString("en-US", { month: "long", year: "numeric" })}`
     : "Joined recently";
 
   // Role-based header color
-  const headerColor = userRole === 'teacher' ? 'bg-purple-600' : 'bg-primary';
+  const headerColor = userRole === "teacher" ? "bg-purple-600" : "bg-primary";
 
   return (
     <View className="flex-1">
@@ -96,13 +121,18 @@ export default function UserScreen() {
           {/* Right side with role badge and logout */}
           <View className="flex-row items-center">
             {/* Role Badge */}
-            <View className={`px-3 py-1 rounded-full mr-3 ${userRole === 'teacher' ? 'bg-yellow-500' : 'bg-green-500'}`}>
+            <View
+              className={`px-3 py-1 rounded-full mr-3 ${userRole === "teacher" ? "bg-yellow-500" : "bg-green-500"}`}
+            >
               <Text className="text-white text-xs font-bold uppercase">
-                {userRole === 'teacher' ? 'TEACHER' : 'STUDENT'}
+                {userRole === "teacher" ? "TEACHER" : "STUDENT"}
               </Text>
             </View>
-            
-            <TouchableOpacity onPress={handleLogOut} className="flex-row items-center bg-white/20 px-3 py-2 rounded-lg">
+
+            <TouchableOpacity
+              onPress={handleLogOut}
+              className="flex-row items-center bg-white/20 px-3 py-2 rounded-lg"
+            >
               <Text className="text-white mr-2 font-semibold">Logout</Text>
               <LogOut size={20} color="white" />
             </TouchableOpacity>
@@ -114,26 +144,32 @@ export default function UserScreen() {
           {/* Avatar with role indicator */}
           <View className="relative">
             <Image
-              source={profileData?.avatar ? { uri: profileData.avatar } : require("../../assets/images/profile.jpg")}
+              source={
+                profileData?.avatar
+                  ? { uri: profileData.avatar }
+                  : require("../../assets/images/profile.jpg")
+              }
               className="w-28 h-28 rounded-full border-4 border-white mb-4"
               resizeMode="cover"
               defaultSource={require("../../assets/images/profile.jpg")}
             />
             {/* Role indicator dot */}
-            <View className={`absolute bottom-2 right-2 w-6 h-6 rounded-full border-2 border-white ${userRole === 'teacher' ? 'bg-yellow-500' : 'bg-green-500'} items-center justify-center`}>
-              {userRole === 'teacher' ? (
+            <View
+              className={`absolute bottom-2 right-2 w-6 h-6 rounded-full border-2 border-white ${userRole === "teacher" ? "bg-yellow-500" : "bg-green-500"} items-center justify-center`}
+            >
+              {userRole === "teacher" ? (
                 <GraduationCap size={12} color="white" />
               ) : (
                 <Book size={12} color="white" />
               )}
             </View>
           </View>
-          
+
           <Text className="text-2xl font-outfit-bold text-white">
             {displayName}
           </Text>
           <Text className="text-base font-outfit-medium text-white/90 mt-1">
-            {userRole === 'teacher' ? 'Educator' : 'Learner'}
+            {userRole === "teacher" ? "Educator" : "Learner"}
           </Text>
           <Text className="text-sm font-outfit-medium text-white/70 mt-1">
             {joinDate}
@@ -144,10 +180,25 @@ export default function UserScreen() {
       {/* Content */}
       <View className="flex-1 bg-white rounded-t-[40px] pt-8 px-6">
         <ScrollView showsVerticalScrollIndicator={false}>
-          {/* Debug Info (Remove in production) */}
+          {/* Debug Info (Remove in production) i want to remove later*/}
           <View className="mb-4 p-3 bg-gray-100 rounded-lg">
-            <Text className="text-xs text-gray-600">User ID: {authUser?.uid?.substring(0, 12)}...</Text>
+            {/* <View>
+             <Text className="text-xs text-gray-600">User ID: {authUser?.uid?.substring(0, 12)}...</Text>
             <Text className="text-xs text-gray-600">Email Verified: {authUser?.emailVerified ? 'Yes' : 'No'}</Text>
+           </View> */}
+
+            {userRole == "teacher" && (
+              <View className="mt-4">
+                <Text className="text-sm text-gray-600 mb-2">
+                  Add or update your teaching subjects
+                </Text>
+
+                <TouchableOpacity className="flex-row items-center">
+                  <CirclePlus color="#444546" />
+                 
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
 
           {/* Personal Details */}
@@ -165,13 +216,13 @@ export default function UserScreen() {
                 label="Email"
                 value={email}
               />
-              
+
               <DetailItem
                 icon={<User size={20} color="#10B981" />}
                 label="Username"
                 value={profileData?.username || displayName}
               />
-              
+
               {profileData?.gender && (
                 <DetailItem
                   icon={<Users size={20} color="#EF4444" />}
@@ -179,7 +230,7 @@ export default function UserScreen() {
                   value={profileData.gender}
                 />
               )}
-              
+
               {profileData?.phone && (
                 <DetailItem
                   icon={<Phone size={20} color="#F59E0B" />}
@@ -187,7 +238,7 @@ export default function UserScreen() {
                   value={profileData.phone}
                 />
               )}
-              
+
               {profileData?.location && (
                 <DetailItem
                   icon={<MapPin size={20} color="#8B5CF6" />}
@@ -199,7 +250,7 @@ export default function UserScreen() {
           </View>
 
           {/* TEACHER-SPECIFIC SECTION */}
-          {userRole === 'teacher' && profileData && (
+          {userRole === "teacher" && profileData && (
             <View className="mb-8">
               <View className="flex-row items-center mb-4">
                 <View className="w-8 h-0.5 bg-primary mr-3" />
@@ -216,7 +267,7 @@ export default function UserScreen() {
                     value={profileData.qualification}
                   />
                 )}
-                
+
                 {profileData.specialization && (
                   <DetailItem
                     icon={<Target size={20} color="#10B981" />}
@@ -224,7 +275,7 @@ export default function UserScreen() {
                     value={profileData.specialization}
                   />
                 )}
-                
+
                 {profileData.yearsOfExperience && (
                   <DetailItem
                     icon={<Calendar size={20} color="#3B82F6" />}
@@ -232,7 +283,7 @@ export default function UserScreen() {
                     value={`${profileData.yearsOfExperience} years`}
                   />
                 )}
-                
+
                 {profileData.hourlyRate > 0 && (
                   <DetailItem
                     icon={<Text className="text-lg">💰</Text>}
@@ -265,20 +316,20 @@ export default function UserScreen() {
 
               {/* Teacher Stats */}
               <View className="flex-row justify-between mt-6">
-                <StatBox 
+                <StatBox
                   label="Rating"
                   value={profileData.rating || "4.5"}
                   suffix="/5"
                   color="text-yellow-600"
                 />
-                
-                <StatBox 
+
+                <StatBox
                   label="Students"
                   value={profileData.totalStudents || "0"}
                   color="text-blue-600"
                 />
-                
-                <StatBox 
+
+                <StatBox
                   label="Classes"
                   value={profileData.totalClasses || "0"}
                   color="text-green-600"
@@ -288,7 +339,7 @@ export default function UserScreen() {
           )}
 
           {/* STUDENT-SPECIFIC SECTION */}
-          {userRole === 'student' && profileData && (
+          {userRole === "student" && profileData && (
             <View className="mb-8">
               <View className="flex-row items-center mb-4">
                 <View className="w-8 h-0.5 bg-green-600 mr-3" />
@@ -296,7 +347,7 @@ export default function UserScreen() {
                   Learning Profile
                 </Text>
               </View>
-              
+
               {/* Student Interests */}
               {profileData.subjectInterest && (
                 <View className="mb-4">
@@ -328,14 +379,14 @@ export default function UserScreen() {
 
               {/* Student Stats */}
               <View className="flex-row justify-between mt-4">
-                <StatBox 
+                <StatBox
                   label="Enrolled"
                   value={profileData.enrolledCourses?.length || "0"}
                   suffix=" courses"
                   color="text-blue-600"
                 />
-                
-                <StatBox 
+
+                <StatBox
                   label="Completed"
                   value={profileData.completedCourses?.length || "0"}
                   suffix=" courses"
@@ -354,11 +405,9 @@ export default function UserScreen() {
                   About
                 </Text>
               </View>
-              
+
               <View className="bg-grayPro-50 p-4 rounded-xl">
-                <Text className="text-grayPro-700">
-                  {profileData.bio}
-                </Text>
+                <Text className="text-grayPro-700">{profileData.bio}</Text>
               </View>
             </View>
           )}
@@ -368,13 +417,15 @@ export default function UserScreen() {
             <View className="flex-row items-center mb-4">
               <View className="w-8 h-0.5 bg-primary mr-3" />
               <Text className="text-xl font-outfit-bold text-grayPro-800">
-                {userRole === 'teacher' ? 'Teaching Areas' : 'Learning Areas'}
+                {userRole === "teacher" ? "Teaching Areas" : "Learning Areas"}
               </Text>
             </View>
 
             <View className="flex-row flex-wrap gap-3">
               {/* Display subjects for teachers */}
-              {userRole === 'teacher' && profileData?.subjects && profileData.subjects.length > 0 ? (
+              {userRole === "teacher" &&
+              profileData?.subjects &&
+              profileData.subjects.length > 0 ? (
                 profileData.subjects.map((subject, index) => (
                   <View
                     key={index}
@@ -385,7 +436,7 @@ export default function UserScreen() {
                     </Text>
                   </View>
                 ))
-              ) : userRole === 'student' && profileData?.subjectInterest ? (
+              ) : userRole === "student" && profileData?.subjectInterest ? (
                 // Display interests for students
                 Array.isArray(profileData.subjectInterest) ? (
                   profileData.subjectInterest.map((interest, index) => (
@@ -406,7 +457,10 @@ export default function UserScreen() {
                   </View>
                 )
               ) : (
-                <Text className="text-gray-500">No {userRole === 'teacher' ? 'subjects' : 'interests'} added yet</Text>
+                <Text className="text-gray-500">
+                  No {userRole === "teacher" ? "subjects" : "interests"} added
+                  yet
+                </Text>
               )}
             </View>
           </View>

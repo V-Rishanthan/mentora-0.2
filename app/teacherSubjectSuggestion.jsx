@@ -110,7 +110,7 @@ Constraints:
     }
 
     // Validate required fields from previous screens
-    const requiredFields = ['username', 'email', 'password', 'qualification', 'yearsOfExperience', 'specialization', 'bio'];
+    const requiredFields = ['username', 'email', 'password', 'qualification', 'yearsOfExperience', 'specialization', 'bio','subjectName','category','duration','description','thumbnail'];
     const missingFields = requiredFields.filter(field => !previousData[field]?.trim());
     
     if (missingFields.length > 0) {
@@ -123,6 +123,24 @@ Constraints:
       Alert.alert("Subjects Required", "Please add at least one subject you teach.");
       return;
     }
+
+    // LOG ALL DATA BEFORE REGISTRATION
+  console.log("======= ALL TEACHER REGISTRATION DATA =======");
+  console.log("📋 FROM ASYNC STORAGE (PREVIOUS SCREENS):");
+  console.log("Username:", previousData.username);
+  console.log("Email:", previousData.email);
+  console.log("Password:", previousData.password ? "*** (hidden)" : "Not provided");
+  console.log("Qualification:", previousData.qualification);
+  console.log("Years of Experience:", previousData.yearsOfExperience);
+  console.log("Specialization:", previousData.specialization);
+  console.log("Bio:", previousData.bio);
+  console.log("Subject Name:", previousData.subjectName);
+  console.log("Category:", previousData.category);
+  console.log("Duration:", previousData.duration);
+  console.log("Description:", previousData.description);
+  console.log("Thumbnail:", previousData.thumbnail);
+  console.log("");
+  
 
     setRegistrationLoading(true);
 
@@ -140,6 +158,14 @@ Constraints:
         yearsOfExperience: previousData.yearsOfExperience,
         specialization: previousData.specialization,
         bio: previousData.bio,
+
+        // subject related info
+        subjectName:previousData.subjectName,
+        category: previousData.category,
+        duration: previousData.duration,
+        description: previousData.description,
+        thumbnail: previousData.thumbnail,
+
         
         // From current screen state (Screen 3):
         subjects: selected,
@@ -163,15 +189,7 @@ Constraints:
         Alert.alert(
           " Registration Successful!",
           "Your teacher account has been created successfully. Welcome to Mentora!",
-          // [
-          //   {
-          //     text: "Get Started",
-          //     onPress: () => {
-          //       // router.dismissAll();
-          //       router.replace("/(tabs)/home");
-          //     }
-          //   }
-          // ]
+          
         );
       } else {
         Alert.alert("Registration Failed", result.error || "Something went wrong. Please try again.");

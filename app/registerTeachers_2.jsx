@@ -83,7 +83,8 @@ export default function RegisterTeachers() {
       });
 
       // Navigate to subjects screen
-      router.push("./teacherSubjectSuggestion");
+      router.push("./addSubject");
+      // router.push("./teacherSubjectSuggestion");
     } catch (error) {
       Alert.alert("Error", "Failed to save data. Please try again.");
       console.error("Error:", error);

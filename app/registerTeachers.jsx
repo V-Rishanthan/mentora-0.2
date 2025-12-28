@@ -62,6 +62,7 @@ const handleContinue = async () => {
       
       // Navigate to next screen
       router.push("./registerTeachers_2");
+      // router.push("./addSubject");
     } catch (error) {
       Alert.alert("Error", "Failed to save data. Please try again.");
       console.error("Error:", error);
