@@ -65,17 +65,21 @@ export default function AddSubject() {
   const pickImage = async () => {
     try {
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ImagePicker.MediaTypeOptions.Images,
-        allowsEditing: true,
-        aspect: [16, 9],
-        quality: 0.8,
+      mediaTypes: ImagePicker.MediaTypeOptions.Images, // allow all image types
+      allowsEditing: true,
+      aspect: [16, 9],
+      quality: 0.8,
+      base64: true,
       });
 
-      if (!result.canceled) {
-        const imageUri = result.assets[0].uri;
-        setThumbnail(imageUri);
-        handleChange("thumbnail", imageUri);
-      }
+     if (!result.canceled) {
+      const asset = result.assets[0];
+      const type = asset.uri.split('.').pop(); // get file extension (jpg, png, etc.)
+      const imageUri = `data:image/${type};base64,${asset.base64}`; // dynamic mime type
+      console.log(imageUri.substring(0, 20));
+      setThumbnail(imageUri);
+      handleChange("thumbnail", imageUri);
+    }
     } catch (error) {
       console.error("Error picking image:", error);
       Alert.alert("Error", "Failed to pick image");

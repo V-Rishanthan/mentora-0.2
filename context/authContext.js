@@ -4,13 +4,15 @@ import {
   signInWithEmailAndPassword,
   signOut,
 } from "firebase/auth";
-import { doc, getDoc, setDoc } from "firebase/firestore";
 import {
-  getDownloadURL,
-  getStorage,
-  ref,
-  uploadString,
-} from "firebase/storage";
+  collection,
+  doc,
+  getDoc,
+  getDocs,
+  query,
+  setDoc,
+  where,
+} from "firebase/firestore";
 import { createContext, useContext, useEffect, useState } from "react";
 import { auth, db } from "../firebase/confic.js";
 import { getAuthErrorMessage } from "../utils/firebaseErrors";
@@ -22,6 +24,8 @@ export const AuthContextProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(undefined);
   const [selectedRole, setSelectedRole] = useState(null); // mannage the role based on the selection
   const [userProfile, setUserProfile] = useState(null);
+  const [courseData, setCourseData] = useState([]);
+  const [loadingCourses, setLoadingCourses] = useState(false);
 
   useEffect(() => {
     // onAuthStatusChanged
@@ -54,6 +58,62 @@ export const AuthContextProvider = ({ children }) => {
     return unsub;
   }, []);
 
+  // Function to fetch all courses (teachers) data
+  const fetchCourseData = async () => {
+    try {
+      setLoadingCourses(true);
+      console.log("Fetching course data...");
+
+      const usersRef = collection(db, "users");
+      const q = query(usersRef, where("role", "==", "teacher"));
+      const querySnapshot = await getDocs(q);
+
+      const courses = [];
+      querySnapshot.forEach((doc) => {
+        const userData = doc.data();
+        // Transform to course format with only required fields
+        courses.push({
+          id: userData.userId || doc.id,
+          category: userData.category || "Uncategorized",
+          description: userData.description || "No description available",
+          subjectName: userData.subjectName || "Untitled Subject",
+          subjects: userData.subjects || [],
+          thumbnail: userData.thumbnail ? { uri: userData.thumbnail } : null,
+
+          // thumbnail: userData.thumbnail
+          //   ? { uri: `data:image/png;base64,${userData.thumbnail}` }
+          //   : null,
+
+          // thumbnail: userData.thumbnail ? { uri: userData.thumbnail } : null,
+          // Include other teacher info if needed
+          instructor: userData.username || "Anonymous Instructor",
+          rating: userData.rating || 0,
+          duration: userData.duration || "0h",
+          isVerified: userData.isVerified || false,
+          qualification: userData.qualification || "",
+          specialization: userData.specialization || "",
+          yearsOfExperience: userData.yearsOfExperience || 0,
+          availableForHire: userData.availableForHire || false,
+          totalStudents: userData.totalStudents || 0,
+          totalClasses: userData.totalClasses || 0,
+        });
+      });
+
+      console.log(`Fetched ${courses.length} courses`);
+      setCourseData(courses);
+      return { success: true, data: courses };
+    } catch (error) {
+      console.error("Error fetching course data:", error);
+      setCourseData([]);
+      return {
+        success: false,
+        error: error.message || "Failed to fetch courses",
+      };
+    } finally {
+      setLoadingCourses(false);
+    }
+  };
+
   // Function to fetch user profile
   const fetchUserProfile = async (userId) => {
     try {
@@ -77,6 +137,7 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
+  // login
   const login = async (email, password) => {
     try {
       if (!email || !password) {
@@ -98,6 +159,7 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
+  // logout
   const logout = async () => {
     try {
       // Sign out from Firebase Authentication
@@ -117,6 +179,7 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
+  // Register the Students
   const register = async (
     username,
     email,
@@ -154,61 +217,7 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
 
-  // Helper to upload Base64 to Firebase Storage
-  // const uploadThumbnailToFirebase = async (base64Data, userId) => {
-  //   try {
-  //     if (!base64Data) return null;
-
-  //     // 1. Create a reference in Storage
-  //     const storage = getStorage();
-  //     const storageRef = ref(storage, `thumbnails/${userId}.jpg`);
-
-  //     // 2. Convert Base64 to Blob
-  //     // If the string includes "data:image/jpeg;base64,", we split it
-  //     const base64Image = base64Data.includes("base64,")
-  //       ? base64Data.split("base64,")[1]
-  //       : base64Data;
-
-  //     const response = await fetch(`data:image/jpeg;base64,${base64Image}`);
-  //     const blob = await response.blob();
-
-  //     // 3. Upload to Firebase Storage
-  //     await uploadBytes(storageRef, blob);
-
-  //     // 4. Get the public Download URL
-  //     const downloadURL = await getDownloadURL(storageRef);
-  //     return downloadURL;
-  //   } catch (error) {
-  //     console.error("Thumbnail upload failed:", error);
-  //     return null;
-  //   }
-  // };
-  const uploadThumbnailToFirebase = async (base64Data, userId) => {
-    try {
-      if (!base64Data) return null;
-
-      const storage = getStorage();
-      const storageRef = ref(storage, `thumbnails/${userId}.jpg`);
-
-      // Ensure the string has the proper Data URL prefix for Firebase to recognize it
-      let finalString = base64Data;
-      if (!base64Data.startsWith("data:")) {
-        finalString = `data:image/jpeg;base64,${base64Data}`;
-      }
-
-      // Use 'data_url' instead of 'base64'
-      // This tells Firebase to parse the "data:image/jpeg;base64,..." prefix automatically
-      await uploadString(storageRef, finalString, "data_url");
-
-      const downloadURL = await getDownloadURL(storageRef);
-      console.log("Upload success! URL:", downloadURL);
-      return downloadURL;
-    } catch (error) {
-      console.error("Thumbnail upload failed:", error);
-      return null;
-    }
-  };
-
+  // Register the Teacher
   const registerTeacher = async (teacherData) => {
     try {
       // Validation
@@ -229,17 +238,6 @@ export const AuthContextProvider = ({ children }) => {
       );
 
       console.log("Firebase user created:", response.user.uid);
-      const userId = response.user.uid; //  Store userId in variable
-
-      // / --- NEW IMAGE LOGIC START ---
-      let thumbnailUrl = null;
-      if (teacherData.thumbnail) {
-        console.log("Uploading thumbnail...");
-        thumbnailUrl = await uploadThumbnailToFirebase(
-          teacherData.thumbnail,
-          userId
-        );
-      }
 
       // 2. Create teacher document in Firestore
       await setDoc(doc(db, "users", response.user.uid), {
@@ -262,7 +260,7 @@ export const AuthContextProvider = ({ children }) => {
         category: teacherData.category || "",
         duration: teacherData.duration || "",
         description: teacherData?.description.trim(),
-        thumbnail: thumbnailUrl,
+        thumbnail: teacherData?.thumbnail || "",
 
         // Status fields
         isVerified: false,
@@ -346,6 +344,10 @@ export const AuthContextProvider = ({ children }) => {
         clearRole,
         userProfile,
         fetchUserProfile,
+        // Course data functions
+        fetchCourseData,
+        courseData,
+        loadingCourses,
       }}
     >
       {children}

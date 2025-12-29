@@ -12,6 +12,7 @@ import {
 import { useRouter } from "expo-router";
 import ProgressCircle from "../components/ProgressCircle";
 import CourseCard from "../CourseCard";
+
 const HomeScreen = () => {
   const [searchQuery, setSearchQuery] = useState("");
   // Skills data
@@ -22,6 +23,14 @@ const HomeScreen = () => {
   ];
 
   const router = useRouter()
+
+
+
+ 
+
+
+
+
   return (
     <ScrollView
       className="flex-1 px-6 relative bg-secondary"

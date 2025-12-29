@@ -188,7 +188,7 @@ export default function UserScreen() {
            </View> */}
 
             {userRole == "teacher" && (
-              <View className="mt-4">
+              <View className="mt-4 flex-row justify-around items-center mb-8 p-4 bg-primary/5 rounded-xl border border-primary/10">
                 <Text className="text-sm text-gray-600 mb-2">
                   Add or update your teaching subjects
                 </Text>

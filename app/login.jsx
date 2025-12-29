@@ -17,13 +17,23 @@ import Button from "./components/Button";
 export default function LoginScreen() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-  const { login, selectedRole } = useAuth();
+  const { login, selectedRole,logout } = useAuth();
 
   const handleSignUp = () => {
     selectedRole == "Student"
       ? router.push("./register")
       : router.push("./registerTeachers");
   };
+
+  const handleLogout = async ()=>{
+    try{
+      await logout();
+      console.log("Logout the app in login Page successful !")
+    }catch(error){
+      console.log("Logout error:", error);
+    }
+
+  }
 
   // assign the hooks
   const emailRef = useRef();
@@ -85,8 +95,18 @@ export default function LoginScreen() {
                 Sign Up
               </Text>
             </TouchableOpacity>
+
+            <Text> | </Text>
+
+            <TouchableOpacity onPress={handleLogout}>
+              <Text className="text-WHITE font-semibold text-[14px]">
+                LogOut
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
+
+
       </View>
 
       {/* White Card */}
